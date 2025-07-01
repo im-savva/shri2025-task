@@ -315,31 +315,11 @@
         const isActive = tabKey === activeTab;
         const containerRef = React.useRef(null);
 
-        const [renderedCount, setRenderedCount] = React.useState(50);
-
-        React.useEffect(() => {
-          if (!isActive) return;
-
-          if (renderedCount < items.length) {
-            const timer = setTimeout(() => {
-              setRenderedCount((prev) => Math.min(prev + 50, items.length));
-            }, 0);
-            return () => clearTimeout(timer);
-          }
-        }, [isActive, renderedCount, items.length]);
-
-        React.useEffect(() => {
-          if (isActive) {
-            setRenderedCount(50);
-          }
-        }, [tabKey, isActive]);
-
         const renderedItems = React.useMemo(() => {
-          const itemsToRender = items.slice(0, renderedCount);
-          return itemsToRender.map((item, index) => (
+          return items.map((item, index) => (
             <Event key={`${tabKey}-${index}`} {...item} />
           ));
-        }, [items, renderedCount, tabKey]);
+        }, [items, tabKey]);
 
         return (
           <div
