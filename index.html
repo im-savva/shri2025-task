@@ -333,18 +333,6 @@
           >
             <ul className="section__panel-list" ref={containerRef}>
               {renderedItems}
-              {renderedCount < items.length && isActive && (
-                <li
-                  className="loading-indicator"
-                  style={{
-                    padding: "20px",
-                    textAlign: "center",
-                    color: "#999",
-                  }}
-                >
-                  Загрузка...
-                </li>
-              )}
             </ul>
           </div>
         );
