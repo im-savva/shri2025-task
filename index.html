@@ -10,6 +10,30 @@
     <link rel="stylesheet" type="text/css" href="reset-min.css" />
     <link rel="stylesheet" type="text/css" href="styles-min.css" />
 
+    <style>
+      .section__panel-list {
+        will-change: scroll-position;
+        transform: translateZ(0);
+      }
+
+      .event {
+        contain: layout style paint;
+        transform: translateZ(0);
+      }
+
+      .event__button {
+        contain: layout;
+      }
+
+      .section__panel_hidden {
+        display: none !important;
+      }
+
+      .loading-indicator {
+        contain: layout style paint;
+      }
+    </style>
+
     <script src="vendors/react-with-dom-min.js" defer></script>
   </head>
   <body>
@@ -91,26 +115,23 @@
         );
       }
 
-      function Event(props) {
-        return React.useMemo(
-          () => (
-            <li className={"event" + (props.slim ? " event_slim" : "")}>
-              <button className="event__button">
-                <span
-                  className={`event__icon event__icon_${props.icon}`}
-                  role="img"
-                  aria-label={props.iconLabel}
-                ></span>
-                <h4 className="event__title">{props.title}</h4>
-                {props.subtitle && (
-                  <span className="event__subtitle">{props.subtitle}</span>
-                )}
-              </button>
-            </li>
-          ),
-          [props]
+      const Event = React.memo(function Event(props) {
+        return (
+          <li className={"event" + (props.slim ? " event_slim" : "")}>
+            <button className="event__button">
+              <span
+                className={`event__icon event__icon_${props.icon}`}
+                role="img"
+                aria-label={props.iconLabel}
+              ></span>
+              <h4 className="event__title">{props.title}</h4>
+              {props.subtitle && (
+                <span className="event__subtitle">{props.subtitle}</span>
+              )}
+            </button>
+          </li>
         );
-      }
+      });
 
       const TABS = {
         all: {
@@ -291,21 +312,59 @@
         activeTab,
         items,
       }) {
+        const isActive = tabKey === activeTab;
+        const containerRef = React.useRef(null);
+
+        const [renderedCount, setRenderedCount] = React.useState(50);
+
+        React.useEffect(() => {
+          if (!isActive) return;
+
+          if (renderedCount < items.length) {
+            const timer = setTimeout(() => {
+              setRenderedCount((prev) => Math.min(prev + 50, items.length));
+            }, 0);
+            return () => clearTimeout(timer);
+          }
+        }, [isActive, renderedCount, items.length]);
+
+        React.useEffect(() => {
+          if (isActive) {
+            setRenderedCount(50);
+          }
+        }, [tabKey, isActive]);
+
+        const renderedItems = React.useMemo(() => {
+          const itemsToRender = items.slice(0, renderedCount);
+          return itemsToRender.map((item, index) => (
+            <Event key={`${tabKey}-${index}`} {...item} />
+          ));
+        }, [items, renderedCount, tabKey]);
+
         return (
           <div
             role="tabpanel"
             className={
-              "section__panel" +
-              (tabKey === activeTab ? "" : " section__panel_hidden")
+              "section__panel" + (isActive ? "" : " section__panel_hidden")
             }
-            aria-hidden={tabKey === activeTab ? "false" : "true"}
+            aria-hidden={isActive ? "false" : "true"}
             id={`panel_${tabKey}`}
             aria-labelledby={`tab_${tabKey}`}
           >
-            <ul className="section__panel-list">
-              {items.map((item, index) => (
-                <Event key={index} {...item} />
-              ))}
+            <ul className="section__panel-list" ref={containerRef}>
+              {renderedItems}
+              {renderedCount < items.length && isActive && (
+                <li
+                  className="loading-indicator"
+                  style={{
+                    padding: "20px",
+                    textAlign: "center",
+                    color: "#999",
+                  }}
+                >
+                  Загрузка...
+                </li>
+              )}
             </ul>
           </div>
         );
@@ -315,25 +374,56 @@
         const ref = React.useRef();
         const [hasRightScroll, setHasRightScroll] = React.useState(false);
 
+        const checkScrollDebounced = React.useCallback(
+          React.useMemo(() => {
+            let timeoutId;
+            return () => {
+              clearTimeout(timeoutId);
+              timeoutId = setTimeout(() => {
+                const activePanel = ref.current?.querySelector(
+                  ".section__panel:not(.section__panel_hidden)"
+                );
+                if (activePanel) {
+                  const list = activePanel.querySelector(
+                    ".section__panel-list"
+                  );
+                  if (list) {
+                    const hasScroll = list.scrollWidth > list.clientWidth;
+                    setHasRightScroll(hasScroll);
+                  }
+                }
+              }, 100);
+            };
+          }, []),
+          []
+        );
+
         React.useEffect(() => {
-          const wrapperWidth = ref.current?.offsetWidth || 0;
-          const scrollableWidth =
-            ref.current?.querySelector("div")?.scrollWidth || 0;
+          checkScrollDebounced();
 
-          setHasRightScroll(scrollableWidth > wrapperWidth);
-        }, [activeTab]);
+          const resizeObserver = new ResizeObserver(checkScrollDebounced);
+          if (ref.current) {
+            resizeObserver.observe(ref.current);
+          }
 
-        const onArrowCLick = () => {
-          const scroller = ref.current.querySelector(
+          return () => {
+            resizeObserver.disconnect();
+          };
+        }, [activeTab, checkScrollDebounced]);
+
+        const onArrowClick = React.useCallback(() => {
+          const activePanel = ref.current?.querySelector(
             ".section__panel:not(.section__panel_hidden)"
           );
+          const scroller = activePanel?.querySelector(".section__panel-list");
+
           if (scroller) {
             scroller.scrollTo({
               left: scroller.scrollLeft + 400,
               behavior: "smooth",
             });
           }
-        };
+        }, []);
 
         return (
           <div className="section__panel-wrapper" ref={ref}>
@@ -346,7 +436,7 @@
               />
             ))}
             {hasRightScroll && (
-              <div className="section__arrow" onClick={onArrowCLick}></div>
+              <div className="section__arrow" onClick={onArrowClick}></div>
             )}
           </div>
         );
