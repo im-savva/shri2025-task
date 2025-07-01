@@ -4,12 +4,302 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Яндекс.Дом</title>
-    <script src="vendors/react-with-dom-min.js"></script>
     <link rel="stylesheet" type="text/css" href="reset-min.css" />
     <link rel="stylesheet" type="text/css" href="styles-min.css" />
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <header class="header">
+        <a href="/" class="header__logo" aria-label="Яндекс.Дом"></a>
+        <button class="header__menu" aria-expanded="false" id="menu-button">
+          <span class="header__menu-text a11y-hidden">Открыть меню</span>
+        </button>
+        <ul class="header__links" id="header-links">
+          <li class="header__item">
+            <a
+              class="header__link header__link_current"
+              href="/"
+              aria-current="page"
+            >
+              Сводка
+            </a>
+          </li>
+          <li class="header__item">
+            <a class="header__link" href="/devices"> Устройства </a>
+          </li>
+          <li class="header__item">
+            <a class="header__link" href="/scripts"> Сценарии </a>
+          </li>
+        </ul>
+      </header>
+
+      <main class="main">
+        <section class="section main__general">
+          <h2 class="section__title section__title-header section__main-title">
+            Главное
+          </h2>
+          <div class="hero-dashboard">
+            <div class="hero-dashboard__primary">
+              <h3 class="hero-dashboard__title">Привет, Геннадий!</h3>
+              <p class="hero-dashboard__subtitle">
+                Двери и окна закрыты, сигнализация включена.
+              </p>
+              <ul class="hero-dashboard__info">
+                <li class="hero-dashboard__item">
+                  <div class="hero-dashboard__item-title">Дома</div>
+                  <div class="hero-dashboard__item-details">
+                    +23
+                    <span class="a11y-hidden">°</span>
+                  </div>
+                </li>
+                <li class="hero-dashboard__item">
+                  <div class="hero-dashboard__item-title">За окном</div>
+                  <div class="hero-dashboard__item-details">
+                    +19
+                    <span class="a11y-hidden">°</span>
+                    <div
+                      class="hero-dashboard__icon hero-dashboard__icon_rain"
+                      role="img"
+                      aria-label="Дождь"
+                    ></div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <ul class="hero-dashboard__schedule">
+              <li class="event">
+                <button class="event__button">
+                  <span
+                    class="event__icon event__icon_temp"
+                    role="img"
+                    aria-label="Температура"
+                  ></span>
+                  <h4 class="event__title">Philips Cooler</h4>
+                  <span class="event__subtitle">Начнет охлаждать в 16:30</span>
+                </button>
+              </li>
+              <li class="event">
+                <button class="event__button">
+                  <span
+                    class="event__icon event__icon_light"
+                    role="img"
+                    aria-label="Освещение"
+                  ></span>
+                  <h4 class="event__title">Xiaomi Yeelight LED Smart Bulb</h4>
+                  <span class="event__subtitle">Включится в 17:00</span>
+                </button>
+              </li>
+              <li class="event">
+                <button class="event__button">
+                  <span
+                    class="event__icon event__icon_light"
+                    role="img"
+                    aria-label="Освещение"
+                  ></span>
+                  <h4 class="event__title">Xiaomi Yeelight LED Smart Bulb</h4>
+                  <span class="event__subtitle">Включится в 17:00</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section main__scripts">
+          <h2 class="section__title section__title-header">
+            Избранные сценарии
+          </h2>
+
+          <ul class="event-grid">
+            <li class="event event_slim">
+              <button class="event__button">
+                <span
+                  class="event__icon event__icon_light2"
+                  role="img"
+                  aria-label="Освещение"
+                ></span>
+                <h4 class="event__title">
+                  Выключить весь свет в доме и во дворе
+                </h4>
+              </button>
+            </li>
+            <li class="event event_slim">
+              <button class="event__button">
+                <span
+                  class="event__icon event__icon_schedule"
+                  role="img"
+                  aria-label="Расписание"
+                ></span>
+                <h4 class="event__title">Я ухожу</h4>
+              </button>
+            </li>
+            <li class="event event_slim">
+              <button class="event__button">
+                <span
+                  class="event__icon event__icon_light2"
+                  role="img"
+                  aria-label="Освещение"
+                ></span>
+                <h4 class="event__title">Включить свет в коридоре</h4>
+              </button>
+            </li>
+            <li class="event event_slim">
+              <button class="event__button">
+                <span
+                  class="event__icon event__icon_temp2"
+                  role="img"
+                  aria-label="Температура"
+                ></span>
+                <h4 class="event__title">Набрать горячую ванну</h4>
+                <span class="event__subtitle">Начнётся в 18:00</span>
+              </button>
+            </li>
+            <li class="event event_slim">
+              <button class="event__button">
+                <span
+                  class="event__icon event__icon_temp2"
+                  role="img"
+                  aria-label="Температура"
+                ></span>
+                <h4 class="event__title">
+                  Сделать пол тёплым во всей квартире
+                </h4>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <section class="section main__devices">
+          <div class="section__title">
+            <h2 class="section__title-header">Избранные устройства</h2>
+
+            <select class="section__select" id="tab-select">
+              <option value="all">Все</option>
+              <option value="kitchen">Кухня</option>
+              <option value="hall">Зал</option>
+              <option value="lights">Лампочки</option>
+              <option value="cameras">Камеры</option>
+            </select>
+
+            <ul role="tablist" class="section__tabs" id="section-tabs">
+              <li
+                role="tab"
+                aria-selected="true"
+                tabindex="0"
+                class="section__tab section__tab_active"
+                id="tab_all"
+                aria-controls="panel_all"
+                data-tab="all"
+              >
+                Все
+              </li>
+              <li
+                role="tab"
+                aria-selected="false"
+                class="section__tab"
+                id="tab_kitchen"
+                aria-controls="panel_kitchen"
+                data-tab="kitchen"
+              >
+                Кухня
+              </li>
+              <li
+                role="tab"
+                aria-selected="false"
+                class="section__tab"
+                id="tab_hall"
+                aria-controls="panel_hall"
+                data-tab="hall"
+              >
+                Зал
+              </li>
+              <li
+                role="tab"
+                aria-selected="false"
+                class="section__tab"
+                id="tab_lights"
+                aria-controls="panel_lights"
+                data-tab="lights"
+              >
+                Лампочки
+              </li>
+              <li
+                role="tab"
+                aria-selected="false"
+                class="section__tab"
+                id="tab_cameras"
+                aria-controls="panel_cameras"
+                data-tab="cameras"
+              >
+                Камеры
+              </li>
+            </ul>
+          </div>
+
+          <div class="section__panel-wrapper" id="panel-wrapper">
+            <div
+              role="tabpanel"
+              class="section__panel"
+              aria-hidden="false"
+              id="panel_all"
+              aria-labelledby="tab_all"
+            >
+              <ul class="section__panel-list" id="panel-list-all">
+                <!-- Items will be populated by JavaScript -->
+              </ul>
+            </div>
+            <div
+              role="tabpanel"
+              class="section__panel section__panel_hidden"
+              aria-hidden="true"
+              id="panel_kitchen"
+              aria-labelledby="tab_kitchen"
+            >
+              <ul class="section__panel-list" id="panel-list-kitchen">
+                <!-- Items will be populated by JavaScript -->
+              </ul>
+            </div>
+            <div
+              role="tabpanel"
+              class="section__panel section__panel_hidden"
+              aria-hidden="true"
+              id="panel_hall"
+              aria-labelledby="tab_hall"
+            >
+              <ul class="section__panel-list" id="panel-list-hall">
+                <!-- Items will be populated by JavaScript -->
+              </ul>
+            </div>
+            <div
+              role="tabpanel"
+              class="section__panel section__panel_hidden"
+              aria-hidden="true"
+              id="panel_lights"
+              aria-labelledby="tab_lights"
+            >
+              <ul class="section__panel-list" id="panel-list-lights">
+                <!-- Items will be populated by JavaScript -->
+              </ul>
+            </div>
+            <div
+              role="tabpanel"
+              class="section__panel section__panel_hidden"
+              aria-hidden="true"
+              id="panel_cameras"
+              aria-labelledby="tab_cameras"
+            >
+              <ul class="section__panel-list" id="panel-list-cameras">
+                <!-- Items will be populated by JavaScript -->
+              </ul>
+            </div>
+            <div
+              class="section__arrow"
+              id="scroll-arrow"
+              style="display: none"
+            ></div>
+          </div>
+        </section>
+      </main>
+    </div>
 
     <footer class="footer">
       <ul class="footer__list">
@@ -30,93 +320,8 @@
       <div class="footer__copyright">© 1997–2023 ООО «Яндекс»</div>
     </footer>
 
-    <script src="vendors/babel.min.js"></script>
-    <script type="text/babel">
-      function Header() {
-        let [expanded, setExpanded] = React.useState(false);
-        let [toggled, setToggled] = React.useState(false);
-
-        const onClick = () => {
-          if (!toggled) {
-            setToggled(true);
-          }
-
-          setExpanded(!expanded);
-        };
-
-        return (
-          <header className="header">
-            <a href="/" className="header__logo" aria-label="Яндекс.Дом"></a>
-            <button
-              className="header__menu"
-              aria-expanded={expanded ? "true" : "false"}
-              onClick={onClick}
-            >
-              <span className="header__menu-text a11y-hidden">
-                {expanded ? "Закрыть меню" : "Открыть меню"}
-              </span>
-            </button>
-            <ul
-              className={
-                "header__links" +
-                (expanded ? " header__links_opened" : "") +
-                (toggled ? " header__links-toggled" : "")
-              }
-            >
-              <li className="header__item">
-                <a
-                  className="header__link header__link_current"
-                  href="/"
-                  aria-current="page"
-                >
-                  Сводка
-                </a>
-              </li>
-              <li className="header__item">
-                <a className="header__link" href="/devices">
-                  Устройства
-                </a>
-              </li>
-              <li className="header__item">
-                <a className="header__link" href="/scripts">
-                  Сценарии
-                </a>
-              </li>
-            </ul>
-          </header>
-        );
-      }
-
-      function Event(props) {
-        const ref = React.useRef();
-
-        const { onSize } = props;
-
-        React.useEffect(() => {
-          const width = ref.current.offsetWidth;
-          const height = ref.current.offsetHeight;
-          if (onSize) {
-            onSize({ width, height });
-          }
-        });
-
-        return (
-          <li ref={ref} className={"event" + (props.slim ? " event_slim" : "")}>
-            <button className="event__button">
-              <span
-                className={`event__icon event__icon_${props.icon}`}
-                role="img"
-                aria-label={props.iconLabel}
-              ></span>
-              <h4 className="event__title">{props.title}</h4>
-              {props.subtitle && (
-                <span className="event__subtitle">{props.subtitle}</span>
-              )}
-            </button>
-          </li>
-        );
-      }
-
+    <script>
+      // Data structure for tabs and devices
       const TABS = {
         all: {
           title: "Все",
@@ -246,227 +451,207 @@
           ],
         },
       };
+
+      // Expand the "all" tab items array to match the original
       TABS.all.items = Array(2 ** 6)
         .fill(TABS.all.items)
         .flat();
-      const TABS_KEYS = Object.keys(TABS);
 
-      function Main() {
-        const ref = React.useRef();
-        const initedRef = React.useRef(false);
-        const [activeTab, setActiveTab] = React.useState("");
-        const [hasRightScroll, setHasRightScroll] = React.useState(false);
+      // Global state
+      let state = {
+        expanded: false,
+        toggled: false,
+        activeTab: "all",
+        hasRightScroll: false,
+      };
 
-        React.useEffect(() => {
-          if (!activeTab && !initedRef.current) {
-            initedRef.current = true;
-            setActiveTab(
-              new URLSearchParams(location.search).get("tab") || "all"
-            );
+      // Initialize the application
+      function init() {
+        // Get initial tab from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabFromUrl = urlParams.get("tab");
+        if (tabFromUrl && TABS[tabFromUrl]) {
+          state.activeTab = tabFromUrl;
+        }
+
+        setupEventListeners();
+        populateDevicePanels();
+        updateActiveTab(state.activeTab);
+        checkScrollability();
+      }
+
+      // Set up all event listeners
+      function setupEventListeners() {
+        // Header menu button
+        const menuButton = document.getElementById("menu-button");
+        const headerLinks = document.getElementById("header-links");
+
+        menuButton.addEventListener("click", () => {
+          if (!state.toggled) {
+            state.toggled = true;
+            headerLinks.classList.add("header__links-toggled");
+          }
+
+          state.expanded = !state.expanded;
+          menuButton.setAttribute(
+            "aria-expanded",
+            state.expanded ? "true" : "false"
+          );
+
+          const menuText = menuButton.querySelector(".header__menu-text");
+          menuText.textContent = state.expanded
+            ? "Закрыть меню"
+            : "Открыть меню";
+
+          if (state.expanded) {
+            headerLinks.classList.add("header__links_opened");
+          } else {
+            headerLinks.classList.remove("header__links_opened");
           }
         });
 
-        const onSelectInput = (event) => {
-          setActiveTab(event.target.value);
-        };
+        // Tab selection via select dropdown
+        const tabSelect = document.getElementById("tab-select");
+        tabSelect.addEventListener("change", (event) => {
+          updateActiveTab(event.target.value);
+        });
 
-        let sizes = [];
-        const onSize = (size) => {
-          sizes = [...sizes, size];
-        };
-
-        React.useEffect(() => {
-          const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
-          const sumHeight = sizes.reduce((acc, item) => acc + item.height, 0);
-
-          const newHasRightScroll = sumWidth > ref.current.offsetWidth;
-          if (newHasRightScroll !== hasRightScroll) {
-            setHasRightScroll(newHasRightScroll);
+        // Tab selection via tab buttons
+        const sectionTabs = document.getElementById("section-tabs");
+        sectionTabs.addEventListener("click", (event) => {
+          const tab = event.target.closest("[data-tab]");
+          if (tab) {
+            const tabKey = tab.getAttribute("data-tab");
+            updateActiveTab(tabKey);
+            tabSelect.value = tabKey;
           }
         });
 
-        const onArrowCLick = () => {
-          const scroller = ref.current.querySelector(
+        // Scroll arrow
+        const scrollArrow = document.getElementById("scroll-arrow");
+        scrollArrow.addEventListener("click", () => {
+          const activePanel = document.querySelector(
             ".section__panel:not(.section__panel_hidden)"
           );
-          if (scroller) {
-            scroller.scrollTo({
-              left: scroller.scrollLeft + 400,
+          if (activePanel) {
+            activePanel.scrollTo({
+              left: activePanel.scrollLeft + 400,
               behavior: "smooth",
             });
           }
-        };
+        });
 
-        return (
-          <main className="main">
-            <section className="section main__general">
-              <h2 className="section__title section__title-header section__main-title">
-                Главное
-              </h2>
-              <div className="hero-dashboard">
-                <div className="hero-dashboard__primary">
-                  <h3 className="hero-dashboard__title">Привет, Геннадий!</h3>
-                  <p className="hero-dashboard__subtitle">
-                    Двери и окна закрыты, сигнализация включена.
-                  </p>
-                  <ul className="hero-dashboard__info">
-                    <li className="hero-dashboard__item">
-                      <div className="hero-dashboard__item-title">Дома</div>
-                      <div className="hero-dashboard__item-details">
-                        +23
-                        <span className="a11y-hidden">°</span>
-                      </div>
-                    </li>
-                    <li className="hero-dashboard__item">
-                      <div className="hero-dashboard__item-title">За окном</div>
-                      <div className="hero-dashboard__item-details">
-                        +19
-                        <span className="a11y-hidden">°</span>
-                        <div
-                          className="hero-dashboard__icon hero-dashboard__icon_rain"
-                          role="img"
-                          aria-label="Дождь"
-                        ></div>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-                <ul className="hero-dashboard__schedule">
-                  <Event
-                    icon="temp"
-                    iconLabel="Температура"
-                    title="Philips Cooler"
-                    subtitle="Начнет охлаждать в 16:30"
-                  />
-                  <Event
-                    icon="light"
-                    iconLabel="Освещение"
-                    title="Xiaomi Yeelight LED Smart Bulb"
-                    subtitle="Включится в 17:00"
-                  />
-                  <Event
-                    icon="light"
-                    iconLabel="Освещение"
-                    title="Xiaomi Yeelight LED Smart Bulb"
-                    subtitle="Включится в 17:00"
-                  />
-                </ul>
-              </div>
-            </section>
-
-            <section className="section main__scripts">
-              <h2 className="section__title section__title-header">
-                Избранные сценарии
-              </h2>
-
-              <ul className="event-grid">
-                <Event
-                  slim={true}
-                  icon="light2"
-                  iconLabel="Освещение"
-                  title="Выключить весь свет в доме и во дворе"
-                />
-                <Event
-                  slim={true}
-                  icon="schedule"
-                  iconLabel="Расписание"
-                  title="Я ухожу"
-                />
-                <Event
-                  slim={true}
-                  icon="light2"
-                  iconLabel="Освещение"
-                  title="Включить свет в коридоре"
-                />
-                <Event
-                  slim={true}
-                  icon="temp2"
-                  iconLabel="Температура"
-                  title="Набрать горячую ванну"
-                  subtitle="Начнётся в 18:00"
-                />
-                <Event
-                  slim={true}
-                  icon="temp2"
-                  iconLabel="Температура"
-                  title="Сделать пол тёплым во всей квартире"
-                />
-              </ul>
-            </section>
-
-            <section className="section main__devices">
-              <div className="section__title">
-                <h2 className="section__title-header">Избранные устройства</h2>
-
-                <select
-                  className="section__select"
-                  defaultValue="all"
-                  onInput={onSelectInput}
-                >
-                  {TABS_KEYS.map((key) => (
-                    <option key={key} value={key}>
-                      {TABS[key].title}
-                    </option>
-                  ))}
-                </select>
-
-                <ul role="tablist" className="section__tabs">
-                  {TABS_KEYS.map((key) => (
-                    <li
-                      key={key}
-                      role="tab"
-                      aria-selected={key === activeTab ? "true" : "false"}
-                      tabIndex={key === activeTab ? "0" : undefined}
-                      className={
-                        "section__tab" +
-                        (key === activeTab ? " section__tab_active" : "")
-                      }
-                      id={`tab_${key}`}
-                      aria-controls={`panel_${key}`}
-                      onClick={() => setActiveTab(key)}
-                    >
-                      {TABS[key].title}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="section__panel-wrapper" ref={ref}>
-                {TABS_KEYS.map((key) => (
-                  <div
-                    key={key}
-                    role="tabpanel"
-                    className={
-                      "section__panel" +
-                      (key === activeTab ? "" : " section__panel_hidden")
-                    }
-                    aria-hidden={key === activeTab ? "false" : "true"}
-                    id={`panel_${key}`}
-                    aria-labelledby={`tab_${key}`}
-                  >
-                    <ul className="section__panel-list">
-                      {TABS[key].items.map((item, index) => (
-                        <Event key={index} {...item} onSize={onSize} />
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-                {hasRightScroll && (
-                  <div className="section__arrow" onClick={onArrowCLick}></div>
-                )}
-              </div>
-            </section>
-          </main>
-        );
+        // Window resize handler for scroll detection
+        window.addEventListener("resize", checkScrollability);
       }
 
-      const root = ReactDOM.createRoot(document.getElementById("app"));
-      root.render(
-        <>
-          <Header />
-          <Main />
-        </>
-      );
+      // Create an event item element
+      function createEventItem(item, isSlim = false) {
+        const li = document.createElement("li");
+        li.className = "event" + (isSlim ? " event_slim" : "");
+
+        const button = document.createElement("button");
+        button.className = "event__button";
+
+        const icon = document.createElement("span");
+        icon.className = `event__icon event__icon_${item.icon}`;
+        icon.setAttribute("role", "img");
+        icon.setAttribute("aria-label", item.iconLabel);
+
+        const title = document.createElement("h4");
+        title.className = "event__title";
+        title.textContent = item.title;
+
+        button.appendChild(icon);
+        button.appendChild(title);
+
+        if (item.subtitle) {
+          const subtitle = document.createElement("span");
+          subtitle.className = "event__subtitle";
+          subtitle.textContent = item.subtitle;
+          button.appendChild(subtitle);
+        }
+
+        li.appendChild(button);
+        return li;
+      }
+
+      // Populate all device panels with data
+      function populateDevicePanels() {
+        Object.keys(TABS).forEach((tabKey) => {
+          const panelList = document.getElementById(`panel-list-${tabKey}`);
+          if (panelList) {
+            panelList.innerHTML = "";
+            TABS[tabKey].items.forEach((item) => {
+              const eventItem = createEventItem(item);
+              panelList.appendChild(eventItem);
+            });
+          }
+        });
+      }
+
+      // Update the active tab and panels
+      function updateActiveTab(newTabKey) {
+        if (!TABS[newTabKey]) return;
+
+        state.activeTab = newTabKey;
+
+        // Update tab buttons
+        document.querySelectorAll(".section__tab").forEach((tab) => {
+          const tabKey = tab.getAttribute("data-tab");
+          const isActive = tabKey === newTabKey;
+
+          tab.classList.toggle("section__tab_active", isActive);
+          tab.setAttribute("aria-selected", isActive ? "true" : "false");
+
+          if (isActive) {
+            tab.setAttribute("tabindex", "0");
+          } else {
+            tab.removeAttribute("tabindex");
+          }
+        });
+
+        // Update panels
+        document.querySelectorAll(".section__panel").forEach((panel) => {
+          const panelKey = panel.id.replace("panel_", "");
+          const isActive = panelKey === newTabKey;
+
+          panel.classList.toggle("section__panel_hidden", !isActive);
+          panel.setAttribute("aria-hidden", isActive ? "false" : "true");
+        });
+
+        // Update select value
+        const tabSelect = document.getElementById("tab-select");
+        tabSelect.value = newTabKey;
+
+        // Check scrollability after tab change
+        setTimeout(checkScrollability, 0);
+      }
+
+      // Check if horizontal scrolling is needed and show/hide arrow
+      function checkScrollability() {
+        const panelWrapper = document.getElementById("panel-wrapper");
+        const activePanel = document.querySelector(
+          ".section__panel:not(.section__panel_hidden)"
+        );
+        const scrollArrow = document.getElementById("scroll-arrow");
+
+        if (activePanel && panelWrapper) {
+          const activeList = activePanel.querySelector(".section__panel-list");
+          if (activeList) {
+            const hasScroll = activeList.scrollWidth > panelWrapper.offsetWidth;
+            state.hasRightScroll = hasScroll;
+            scrollArrow.style.display = hasScroll ? "block" : "none";
+          }
+        }
+      }
+
+      // Initialize the application when DOM is loaded
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
     </script>
   </body>
 </html>
