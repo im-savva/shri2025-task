@@ -1,0 +1,479 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+
+function Header() {
+  let [expanded, setExpanded] = React.useState(false);
+  let [toggled, setToggled] = React.useState(false);
+
+  const onClick = () => {
+    if (!toggled) {
+      setToggled(true);
+    }
+
+    setExpanded(!expanded);
+  };
+
+  return (
+    <header className="header">
+      <a href="/" className="header__logo" aria-label="Яндекс.Дом"></a>
+      <button
+        className="header__menu"
+        aria-expanded={expanded ? "true" : "false"}
+        onClick={onClick}
+      >
+        <span className="header__menu-text a11y-hidden">
+          {expanded ? "Закрыть меню" : "Открыть меню"}
+        </span>
+      </button>
+      <ul
+        className={
+          "header__links" +
+          (expanded ? " header__links_opened" : "") +
+          (toggled ? " header__links-toggled" : "")
+        }
+      >
+        <li className="header__item">
+          <a
+            className="header__link header__link_current"
+            href="/"
+            aria-current="page"
+          >
+            Сводка
+          </a>
+        </li>
+        <li className="header__item">
+          <a className="header__link" href="/devices">
+            Устройства
+          </a>
+        </li>
+        <li className="header__item">
+          <a className="header__link" href="/scripts">
+            Сценарии
+          </a>
+        </li>
+      </ul>
+    </header>
+  );
+}
+
+const Event = React.memo(function Event(props) {
+  return (
+    <li className={"event" + (props.slim ? " event_slim" : "")}>
+      <button className="event__button">
+        <span
+          className={`event__icon event__icon_${props.icon}`}
+          role="img"
+          aria-label={props.iconLabel}
+        ></span>
+        <h4 className="event__title">{props.title}</h4>
+        {props.subtitle && (
+          <span className="event__subtitle">{props.subtitle}</span>
+        )}
+      </button>
+    </li>
+  );
+});
+
+const TABS = {
+  all: {
+    title: "Все",
+    items: [
+      {
+        icon: "light2",
+        iconLabel: "Освещение",
+        title: "Xiaomi Yeelight LED Smart Bulb",
+        subtitle: "Включено",
+      },
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "D-Link Omna 180 Cam",
+        subtitle: "Включится в 17:00",
+      },
+      {
+        icon: "temp",
+        iconLabel: "Температура",
+        title: "Elgato Eve Degree Connected",
+        subtitle: "Выключено до 17:00",
+      },
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "LIFX Mini Day & Dusk A60 E27",
+        subtitle: "Включится в 17:00",
+      },
+      {
+        icon: "light2",
+        iconLabel: "Освещение",
+        title: "Xiaomi Mi Air Purifier 2S",
+        subtitle: "Включено",
+      },
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "Philips Zhirui",
+        subtitle: "Включено",
+      },
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "Philips Zhirui",
+        subtitle: "Включено",
+      },
+      {
+        icon: "light2",
+        iconLabel: "Освещение",
+        title: "Xiaomi Mi Air Purifier 2S",
+        subtitle: "Включено",
+      },
+    ],
+  },
+  kitchen: {
+    title: "Кухня",
+    items: [
+      {
+        icon: "light2",
+        iconLabel: "Освещение",
+        title: "Xiaomi Yeelight LED Smart Bulb",
+        subtitle: "Включено",
+      },
+      {
+        icon: "temp",
+        iconLabel: "Температура",
+        title: "Elgato Eve Degree Connected",
+        subtitle: "Выключено до 17:00",
+      },
+    ],
+  },
+  hall: {
+    title: "Зал",
+    items: [
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "Philips Zhirui",
+        subtitle: "Выключено",
+      },
+      {
+        icon: "light2",
+        iconLabel: "Освещение",
+        title: "Xiaomi Mi Air Purifier 2S",
+        subtitle: "Выключено",
+      },
+    ],
+  },
+  lights: {
+    title: "Лампочки",
+    items: [
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "D-Link Omna 180 Cam",
+        subtitle: "Включится в 17:00",
+      },
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "LIFX Mini Day & Dusk A60 E27",
+        subtitle: "Включится в 17:00",
+      },
+      {
+        icon: "light2",
+        iconLabel: "Освещение",
+        title: "Xiaomi Mi Air Purifier 2S",
+        subtitle: "Включено",
+      },
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "Philips Zhirui",
+        subtitle: "Включено",
+      },
+    ],
+  },
+  cameras: {
+    title: "Камеры",
+    items: [
+      {
+        icon: "light2",
+        iconLabel: "Освещение",
+        title: "Xiaomi Mi Air Purifier 2S",
+        subtitle: "Включено",
+      },
+    ],
+  },
+};
+TABS.all.items = Array(2 ** 6)
+  .fill(TABS.all.items)
+  .flat();
+const TABS_KEYS = Object.keys(TABS);
+
+function TabSelector({ activeTab, setActiveTab }) {
+  return (
+    <select
+      className="section__select"
+      value={activeTab}
+      onChange={(e) => setActiveTab(e.target.value)}
+    >
+      {TABS_KEYS.map((key) => (
+        <option key={key} value={key}>
+          {TABS[key].title}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+const TabList = React.memo(function TabList({ activeTab, setActiveTab }) {
+  return (
+    <ul role="tablist" className="section__tabs">
+      {TABS_KEYS.map((key) => (
+        <li
+          key={key}
+          role="tab"
+          aria-selected={key === activeTab ? "true" : "false"}
+          tabIndex={key === activeTab ? "0" : undefined}
+          className={
+            "section__tab" + (key === activeTab ? " section__tab_active" : "")
+          }
+          id={`tab_${key}`}
+          aria-controls={`panel_${key}`}
+          onClick={() => setActiveTab(key)}
+        >
+          {TABS[key].title}
+        </li>
+      ))}
+    </ul>
+  );
+});
+
+const DevicePanel = React.memo(function DevicePanel({
+  tabKey,
+  activeTab,
+  items,
+}) {
+  const isActive = tabKey === activeTab;
+  const containerRef = React.useRef(null);
+
+  const renderedItems = React.useMemo(() => {
+    return items.map((item, index) => (
+      <Event key={`${tabKey}-${index}`} {...item} />
+    ));
+  }, [items, tabKey]);
+
+  return (
+    <div
+      role="tabpanel"
+      className={"section__panel" + (isActive ? "" : " section__panel_hidden")}
+      aria-hidden={isActive ? "false" : "true"}
+      id={`panel_${tabKey}`}
+      aria-labelledby={`tab_${tabKey}`}
+    >
+      <ul className="section__panel-list" ref={containerRef}>
+        {renderedItems}
+      </ul>
+    </div>
+  );
+});
+
+function DevicePanelsWrapper({ activeTab }) {
+  const ref = React.useRef();
+  const [hasRightScroll, setHasRightScroll] = React.useState(false);
+
+  const checkScrollDebounced = React.useCallback(
+    React.useMemo(() => {
+      let timeoutId;
+      return () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          const activePanel = ref.current?.querySelector(
+            ".section__panel:not(.section__panel_hidden)"
+          );
+          if (activePanel) {
+            const list = activePanel.querySelector(".section__panel-list");
+            if (list) {
+              const hasScroll = list.scrollWidth > list.clientWidth;
+              setHasRightScroll(hasScroll);
+            }
+          }
+        }, 100);
+      };
+    }, []),
+    []
+  );
+
+  React.useEffect(() => {
+    checkScrollDebounced();
+
+    const resizeObserver = new ResizeObserver(checkScrollDebounced);
+    if (ref.current) {
+      resizeObserver.observe(ref.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [activeTab, checkScrollDebounced]);
+
+  const onArrowClick = React.useCallback(() => {
+    const activePanel = ref.current?.querySelector(
+      ".section__panel:not(.section__panel_hidden)"
+    );
+    const scroller = activePanel?.querySelector(".section__panel-list");
+
+    if (scroller) {
+      scroller.scrollTo({
+        left: scroller.scrollLeft + 400,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
+  return (
+    <div className="section__panel-wrapper" ref={ref}>
+      {TABS_KEYS.map((key) => (
+        <DevicePanel
+          key={key}
+          tabKey={key}
+          activeTab={activeTab}
+          items={TABS[key].items}
+        />
+      ))}
+      {hasRightScroll && (
+        <div className="section__arrow" onClick={onArrowClick}></div>
+      )}
+    </div>
+  );
+}
+
+function Main() {
+  const initedRef = React.useRef(false);
+  const [activeTab, setActiveTab] = React.useState("");
+
+  React.useEffect(() => {
+    if (!activeTab && !initedRef.current) {
+      initedRef.current = true;
+      setActiveTab(new URLSearchParams(location.search).get("tab") || "all");
+    }
+  }, [activeTab]);
+
+  return (
+    <main className="main">
+      <section className="section main__general">
+        <h2 className="section__title section__title-header section__main-title">
+          Главное
+        </h2>
+        <div className="hero-dashboard">
+          <div className="hero-dashboard__primary">
+            <h3 className="hero-dashboard__title">Привет, Геннадий!</h3>
+            <p className="hero-dashboard__subtitle">
+              Двери и окна закрыты, сигнализация включена.
+            </p>
+            <ul className="hero-dashboard__info">
+              <li className="hero-dashboard__item">
+                <div className="hero-dashboard__item-title">Дома</div>
+                <div className="hero-dashboard__item-details">
+                  +23
+                  <span className="a11y-hidden">°</span>
+                </div>
+              </li>
+              <li className="hero-dashboard__item">
+                <div className="hero-dashboard__item-title">За окном</div>
+                <div className="hero-dashboard__item-details">
+                  +19
+                  <span className="a11y-hidden">°</span>
+                  <div
+                    className="hero-dashboard__icon hero-dashboard__icon_rain"
+                    role="img"
+                    aria-label="Дождь"
+                  ></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <ul className="hero-dashboard__schedule">
+            <Event
+              icon="temp"
+              iconLabel="Температура"
+              title="Philips Cooler"
+              subtitle="Начнет охлаждать в 16:30"
+            />
+            <Event
+              icon="light"
+              iconLabel="Освещение"
+              title="Xiaomi Yeelight LED Smart Bulb"
+              subtitle="Включится в 17:00"
+            />
+            <Event
+              icon="light"
+              iconLabel="Освещение"
+              title="Xiaomi Yeelight LED Smart Bulb"
+              subtitle="Включится в 17:00"
+            />
+          </ul>
+        </div>
+      </section>
+
+      <section className="section main__scripts">
+        <h2 className="section__title section__title-header">
+          Избранные сценарии
+        </h2>
+
+        <ul className="event-grid">
+          <Event
+            slim={true}
+            icon="light2"
+            iconLabel="Освещение"
+            title="Выключить весь свет в доме и во дворе"
+          />
+          <Event
+            slim={true}
+            icon="schedule"
+            iconLabel="Расписание"
+            title="Я ухожу"
+          />
+          <Event
+            slim={true}
+            icon="light2"
+            iconLabel="Освещение"
+            title="Включить свет в коридоре"
+          />
+          <Event
+            slim={true}
+            icon="temp2"
+            iconLabel="Температура"
+            title="Набрать горячую ванну"
+            subtitle="Начнётся в 18:00"
+          />
+          <Event
+            slim={true}
+            icon="temp2"
+            iconLabel="Температура"
+            title="Сделать пол тёплым во всей квартире"
+          />
+        </ul>
+      </section>
+
+      <section className="section main__devices">
+        <div className="section__title">
+          <h2 className="section__title-header">Избранные устройства</h2>
+          <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
+          <TabList activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
+        <DevicePanelsWrapper activeTab={activeTab} />
+      </section>
+    </main>
+  );
+}
+
+function App() {
+  return (
+    <>
+      <Header />
+      <Main />
+    </>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("app"));
+root.render(<App />);
