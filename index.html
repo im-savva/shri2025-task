@@ -291,29 +291,6 @@
         activeTab,
         items,
       }) {
-        const scrollRef = React.useRef();
-
-        const [visibleItems, setVisibleItems] = React.useState(
-          items.slice(0, 20)
-        );
-
-        React.useEffect(() => {
-          if (scrollRef.current) {
-            scrollRef.current.addEventListener("scroll", () => {
-              const scrollLeft = scrollRef.current.scrollLeft;
-              const scrollWidth = scrollRef.current.scrollWidth;
-              const clientWidth = scrollRef.current.clientWidth;
-
-              if (scrollLeft + clientWidth >= scrollWidth - 100) {
-                setVisibleItems((prevItems) => [
-                  ...prevItems,
-                  ...items.slice(prevItems.length, prevItems.length + 20),
-                ]);
-              }
-            });
-          }
-        }, [items]);
-
         return (
           <div
             role="tabpanel"
@@ -324,10 +301,9 @@
             aria-hidden={tabKey === activeTab ? "false" : "true"}
             id={`panel_${tabKey}`}
             aria-labelledby={`tab_${tabKey}`}
-            ref={scrollRef}
           >
             <ul className="section__panel-list">
-              {visibleItems.map((item, index) => (
+              {items.map((item, index) => (
                 <Event key={index} {...item} />
               ))}
             </ul>
