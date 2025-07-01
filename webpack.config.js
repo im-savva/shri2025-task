@@ -14,6 +14,11 @@ module.exports = (env, argv) => {
     },
     resolve: {
       extensions: [".js", ".jsx"],
+      // Алиасы для оптимизации
+      alias: {
+        react: "react",
+        "react-dom": "react-dom",
+      },
     },
     module: {
       rules: [
@@ -22,6 +27,25 @@ module.exports = (env, argv) => {
           exclude: /node_modules/,
           use: {
             loader: "babel-loader",
+            options: {
+              presets: [
+                [
+                  "@babel/preset-env",
+                  {
+                    targets: "> 0.25%, not dead",
+                    modules: false, // Позволяет webpack делать tree shaking
+                    useBuiltIns: "entry",
+                    corejs: 3,
+                  },
+                ],
+                [
+                  "@babel/preset-react",
+                  {
+                    runtime: "automatic", // Новый JSX runtime
+                  },
+                ],
+              ],
+            },
           },
         },
         {
@@ -35,6 +59,16 @@ module.exports = (env, argv) => {
         template: "./src/index.html",
         filename: "index.html",
         inject: "body",
+        minify: isProduction
+          ? {
+              collapseWhitespace: true,
+              removeComments: true,
+              removeRedundantAttributes: true,
+              removeScriptTypeAttributes: true,
+              removeStyleLinkTypeAttributes: true,
+              useShortDoctype: true,
+            }
+          : false,
       }),
       new CopyWebpackPlugin({
         patterns: [
@@ -59,16 +93,38 @@ module.exports = (env, argv) => {
       compress: true,
     },
     optimization: {
+      usedExports: true,
+      sideEffects: false,
       splitChunks: {
         chunks: "all",
+        minSize: 20000,
+        maxSize: 244000,
         cacheGroups: {
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name: "vendors",
+            priority: -10,
             chunks: "all",
+          },
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: "react",
+            chunks: "all",
+            priority: 10,
           },
         },
       },
+      ...(isProduction && {
+        minimize: true,
+        minimizer: [
+          "...", // Используем дефолтные минификаторы
+        ],
+      }),
     },
     devtool: isProduction ? "source-map" : "eval-source-map",
   };

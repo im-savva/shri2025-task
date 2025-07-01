@@ -1,9 +1,9 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
 
 function Header() {
-  let [expanded, setExpanded] = React.useState(false);
-  let [toggled, setToggled] = React.useState(false);
+  let [expanded, setExpanded] = useState(false);
+  let [toggled, setToggled] = useState(false);
 
   const onClick = () => {
     if (!toggled) {
@@ -56,7 +56,7 @@ function Header() {
   );
 }
 
-const Event = React.memo(function Event(props) {
+const Event = memo(function Event(props) {
   return (
     <li className={"event" + (props.slim ? " event_slim" : "")}>
       <button className="event__button">
@@ -224,7 +224,7 @@ function TabSelector({ activeTab, setActiveTab }) {
   );
 }
 
-const TabList = React.memo(function TabList({ activeTab, setActiveTab }) {
+const TabList = memo(function TabList({ activeTab, setActiveTab }) {
   return (
     <ul role="tablist" className="section__tabs">
       {TABS_KEYS.map((key) => (
@@ -247,15 +247,11 @@ const TabList = React.memo(function TabList({ activeTab, setActiveTab }) {
   );
 });
 
-const DevicePanel = React.memo(function DevicePanel({
-  tabKey,
-  activeTab,
-  items,
-}) {
+const DevicePanel = memo(function DevicePanel({ tabKey, activeTab, items }) {
   const isActive = tabKey === activeTab;
-  const containerRef = React.useRef(null);
+  const containerRef = useRef(null);
 
-  const renderedItems = React.useMemo(() => {
+  const renderedItems = useMemo(() => {
     return items.map((item, index) => (
       <Event key={`${tabKey}-${index}`} {...item} />
     ));
@@ -277,11 +273,11 @@ const DevicePanel = React.memo(function DevicePanel({
 });
 
 function DevicePanelsWrapper({ activeTab }) {
-  const ref = React.useRef();
-  const [hasRightScroll, setHasRightScroll] = React.useState(false);
+  const ref = useRef();
+  const [hasRightScroll, setHasRightScroll] = useState(false);
 
-  const checkScrollDebounced = React.useCallback(
-    React.useMemo(() => {
+  const checkScrollDebounced = useCallback(
+    useMemo(() => {
       let timeoutId;
       return () => {
         clearTimeout(timeoutId);
@@ -302,7 +298,7 @@ function DevicePanelsWrapper({ activeTab }) {
     []
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     checkScrollDebounced();
 
     const resizeObserver = new ResizeObserver(checkScrollDebounced);
@@ -315,7 +311,7 @@ function DevicePanelsWrapper({ activeTab }) {
     };
   }, [activeTab, checkScrollDebounced]);
 
-  const onArrowClick = React.useCallback(() => {
+  const onArrowClick = useCallback(() => {
     const activePanel = ref.current?.querySelector(
       ".section__panel:not(.section__panel_hidden)"
     );
@@ -347,10 +343,10 @@ function DevicePanelsWrapper({ activeTab }) {
 }
 
 function Main() {
-  const initedRef = React.useRef(false);
-  const [activeTab, setActiveTab] = React.useState("");
+  const initedRef = useRef(false);
+  const [activeTab, setActiveTab] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!activeTab && !initedRef.current) {
       initedRef.current = true;
       setActiveTab(new URLSearchParams(location.search).get("tab") || "all");
@@ -475,5 +471,5 @@ function App() {
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById("app"));
+const root = createRoot(document.getElementById("app"));
 root.render(<App />);
