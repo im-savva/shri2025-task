@@ -1,6 +1,9 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === "production";
@@ -14,7 +17,6 @@ module.exports = (env, argv) => {
     },
     resolve: {
       extensions: [".js", ".jsx"],
-      // Алиасы для оптимизации
       alias: {
         react: "react",
         "react-dom": "react-dom",
@@ -33,7 +35,7 @@ module.exports = (env, argv) => {
                   "@babel/preset-env",
                   {
                     targets: "> 0.25%, not dead",
-                    modules: false, // Позволяет webpack делать tree shaking
+                    modules: false,
                     useBuiltIns: "entry",
                     corejs: 3,
                   },
@@ -41,7 +43,7 @@ module.exports = (env, argv) => {
                 [
                   "@babel/preset-react",
                   {
-                    runtime: "automatic", // Новый JSX runtime
+                    runtime: "automatic",
                   },
                 ],
               ],
@@ -50,7 +52,10 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.css$/,
-          use: ["style-loader", "css-loader"],
+          use: [
+            isProduction ? MiniCssExtractPlugin.loader : "style-loader",
+            "css-loader",
+          ],
         },
       ],
     },
@@ -67,9 +72,21 @@ module.exports = (env, argv) => {
               removeScriptTypeAttributes: true,
               removeStyleLinkTypeAttributes: true,
               useShortDoctype: true,
+              minifyCSS: true,
+              minifyJS: true,
+              removeEmptyAttributes: true,
+              removeOptionalTags: true,
             }
           : false,
       }),
+      ...(isProduction
+        ? [
+            new MiniCssExtractPlugin({
+              filename: "css/[name].[contenthash].css",
+              chunkFilename: "css/[id].[contenthash].css",
+            }),
+          ]
+        : []),
       new CopyWebpackPlugin({
         patterns: [
           {
@@ -95,6 +112,64 @@ module.exports = (env, argv) => {
     optimization: {
       usedExports: true,
       sideEffects: false,
+      minimize: true,
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            compress: {
+              drop_console: isProduction,
+              drop_debugger: true,
+              pure_funcs: isProduction
+                ? ["console.log", "console.info", "console.debug"]
+                : [],
+            },
+            mangle: {
+              safari10: true,
+            },
+            output: {
+              comments: false,
+            },
+          },
+          extractComments: false,
+        }),
+        new CssMinimizerPlugin({
+          minimizerOptions: {
+            preset: [
+              "default",
+              {
+                discardComments: { removeAll: true },
+                normalizeWhitespace: true,
+                colormin: true,
+                convertValues: true,
+                discardDuplicates: true,
+                discardEmpty: true,
+                discardOverridden: true,
+                discardUnused: true,
+                mergeIdents: false,
+                mergeRules: true,
+                minifyFontValues: true,
+                minifyGradients: true,
+                minifyParams: true,
+                minifySelectors: true,
+                normalizeCharset: true,
+                normalizeDisplayValues: true,
+                normalizePositions: true,
+                normalizeRepeatStyle: true,
+                normalizeString: true,
+                normalizeTimingFunctions: true,
+                normalizeUnicode: true,
+                normalizeUrl: true,
+                orderedValues: true,
+                reduceIdents: false,
+                reduceInitial: true,
+                reduceTransforms: true,
+                svgo: true,
+                uniqueSelectors: true,
+              },
+            ],
+          },
+        }),
+      ],
       splitChunks: {
         chunks: "all",
         minSize: 20000,
@@ -119,12 +194,6 @@ module.exports = (env, argv) => {
           },
         },
       },
-      ...(isProduction && {
-        minimize: true,
-        minimizer: [
-          "...", // Используем дефолтные минификаторы
-        ],
-      }),
     },
     devtool: isProduction ? "source-map" : "eval-source-map",
   };
