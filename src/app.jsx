@@ -1,9 +1,9 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 
 function Header() {
-  let [expanded, setExpanded] = useState(false);
-  let [toggled, setToggled] = useState(false);
+  let [expanded, setExpanded] = React.useState(false);
+  let [toggled, setToggled] = React.useState(false);
 
   const onClick = () => {
     if (!toggled) {
@@ -56,9 +56,21 @@ function Header() {
   );
 }
 
-const Event = memo(function Event(props) {
+function Event(props) {
+  const ref = React.useRef();
+
+  const { onSize } = props;
+
+  React.useEffect(() => {
+    const width = ref.current.offsetWidth;
+    const height = ref.current.offsetHeight;
+    if (onSize) {
+      onSize({ width, height });
+    }
+  });
+
   return (
-    <li className={"event" + (props.slim ? " event_slim" : "")}>
+    <li ref={ref} className={"event" + (props.slim ? " event_slim" : "")}>
       <button className="event__button">
         <span
           className={`event__icon event__icon_${props.icon}`}
@@ -72,7 +84,7 @@ const Event = memo(function Event(props) {
       </button>
     </li>
   );
-});
+}
 
 const TABS = {
   all: {
@@ -203,155 +215,54 @@ const TABS = {
     ],
   },
 };
-TABS.all.items = Array(2 ** 6)
-  .fill(TABS.all.items)
-  .flat();
+for (let i = 0; i < 6; ++i) {
+  TABS.all.items = [...TABS.all.items, ...TABS.all.items];
+}
 const TABS_KEYS = Object.keys(TABS);
 
-function TabSelector({ activeTab, setActiveTab }) {
-  return (
-    <select
-      className="section__select"
-      value={activeTab}
-      onChange={(e) => setActiveTab(e.target.value)}
-    >
-      {TABS_KEYS.map((key) => (
-        <option key={key} value={key}>
-          {TABS[key].title}
-        </option>
-      ))}
-    </select>
-  );
-}
+function Main() {
+  const ref = React.useRef();
+  const initedRef = React.useRef(false);
+  const [activeTab, setActiveTab] = React.useState("");
+  const [hasRightScroll, setHasRightScroll] = React.useState(false);
 
-const TabList = memo(function TabList({ activeTab, setActiveTab }) {
-  return (
-    <ul role="tablist" className="section__tabs">
-      {TABS_KEYS.map((key) => (
-        <li
-          key={key}
-          role="tab"
-          aria-selected={key === activeTab ? "true" : "false"}
-          tabIndex={key === activeTab ? "0" : undefined}
-          className={
-            "section__tab" + (key === activeTab ? " section__tab_active" : "")
-          }
-          id={`tab_${key}`}
-          aria-controls={`panel_${key}`}
-          onClick={() => setActiveTab(key)}
-        >
-          {TABS[key].title}
-        </li>
-      ))}
-    </ul>
-  );
-});
-
-const DevicePanel = memo(function DevicePanel({ tabKey, activeTab, items }) {
-  const isActive = tabKey === activeTab;
-  const containerRef = useRef(null);
-
-  const renderedItems = useMemo(() => {
-    return items.map((item, index) => (
-      <Event key={`${tabKey}-${index}`} {...item} />
-    ));
-  }, [items, tabKey]);
-
-  return (
-    <div
-      role="tabpanel"
-      className={"section__panel" + (isActive ? "" : " section__panel_hidden")}
-      aria-hidden={isActive ? "false" : "true"}
-      id={`panel_${tabKey}`}
-      aria-labelledby={`tab_${tabKey}`}
-    >
-      <ul className="section__panel-list" ref={containerRef}>
-        {renderedItems}
-      </ul>
-    </div>
-  );
-});
-
-function DevicePanelsWrapper({ activeTab }) {
-  const ref = useRef();
-  const [hasRightScroll, setHasRightScroll] = useState(false);
-
-  const checkScrollDebounced = useCallback(
-    useMemo(() => {
-      let timeoutId;
-      return () => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-          const activePanel = ref.current?.querySelector(
-            ".section__panel:not(.section__panel_hidden)"
-          );
-          if (activePanel) {
-            const list = activePanel.querySelector(".section__panel-list");
-            if (list) {
-              const hasScroll = list.scrollWidth > list.clientWidth;
-              setHasRightScroll(hasScroll);
-            }
-          }
-        }, 100);
-      };
-    }, []),
-    []
-  );
-
-  useEffect(() => {
-    checkScrollDebounced();
-
-    const resizeObserver = new ResizeObserver(checkScrollDebounced);
-    if (ref.current) {
-      resizeObserver.observe(ref.current);
+  React.useEffect(() => {
+    if (!activeTab && !initedRef.current) {
+      initedRef.current = true;
+      setActiveTab(new URLSearchParams(location.search).get("tab") || "all");
     }
+  });
 
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [activeTab, checkScrollDebounced]);
+  const onSelectInput = (event) => {
+    setActiveTab(event.target.value);
+  };
 
-  const onArrowClick = useCallback(() => {
-    const activePanel = ref.current?.querySelector(
+  let sizes = [];
+  const onSize = (size) => {
+    sizes = [...sizes, size];
+  };
+
+  React.useEffect(() => {
+    const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
+    const sumHeight = sizes.reduce((acc, item) => acc + item.height, 0);
+
+    const newHasRightScroll = sumWidth > ref.current.offsetWidth;
+    if (newHasRightScroll !== hasRightScroll) {
+      setHasRightScroll(newHasRightScroll);
+    }
+  });
+
+  const onArrowCLick = () => {
+    const scroller = ref.current.querySelector(
       ".section__panel:not(.section__panel_hidden)"
     );
-    const scroller = activePanel?.querySelector(".section__panel-list");
-
     if (scroller) {
       scroller.scrollTo({
         left: scroller.scrollLeft + 400,
         behavior: "smooth",
       });
     }
-  }, []);
-
-  return (
-    <div className="section__panel-wrapper" ref={ref}>
-      {TABS_KEYS.map((key) => (
-        <DevicePanel
-          key={key}
-          tabKey={key}
-          activeTab={activeTab}
-          items={TABS[key].items}
-        />
-      ))}
-      {hasRightScroll && (
-        <div className="section__arrow" onClick={onArrowClick}></div>
-      )}
-    </div>
-  );
-}
-
-function Main() {
-  const initedRef = useRef(false);
-  const [activeTab, setActiveTab] = useState("");
-
-  useEffect(() => {
-    if (!activeTab && !initedRef.current) {
-      initedRef.current = true;
-      setActiveTab(new URLSearchParams(location.search).get("tab") || "all");
-    }
-  }, [activeTab]);
+  };
 
   return (
     <main className="main">
@@ -453,10 +364,64 @@ function Main() {
       <section className="section main__devices">
         <div className="section__title">
           <h2 className="section__title-header">Избранные устройства</h2>
-          <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
-          <TabList activeTab={activeTab} setActiveTab={setActiveTab} />
+
+          <select
+            className="section__select"
+            defaultValue="all"
+            onInput={onSelectInput}
+          >
+            {TABS_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {TABS[key].title}
+              </option>
+            ))}
+          </select>
+
+          <ul role="tablist" className="section__tabs">
+            {TABS_KEYS.map((key) => (
+              <li
+                key={key}
+                role="tab"
+                aria-selected={key === activeTab ? "true" : "false"}
+                tabIndex={key === activeTab ? "0" : undefined}
+                className={
+                  "section__tab" +
+                  (key === activeTab ? " section__tab_active" : "")
+                }
+                id={`tab_${key}`}
+                aria-controls={`panel_${key}`}
+                onClick={() => setActiveTab(key)}
+              >
+                {TABS[key].title}
+              </li>
+            ))}
+          </ul>
         </div>
-        <DevicePanelsWrapper activeTab={activeTab} />
+
+        <div className="section__panel-wrapper" ref={ref}>
+          {TABS_KEYS.map((key) => (
+            <div
+              key={key}
+              role="tabpanel"
+              className={
+                "section__panel" +
+                (key === activeTab ? "" : " section__panel_hidden")
+              }
+              aria-hidden={key === activeTab ? "false" : "true"}
+              id={`panel_${key}`}
+              aria-labelledby={`tab_${key}`}
+            >
+              <ul className="section__panel-list">
+                {TABS[key].items.map((item, index) => (
+                  <Event key={index} {...item} onSize={onSize} />
+                ))}
+              </ul>
+            </div>
+          ))}
+          {hasRightScroll && (
+            <div className="section__arrow" onClick={onArrowCLick}></div>
+          )}
+        </div>
       </section>
     </main>
   );
@@ -471,5 +436,8 @@ function App() {
   );
 }
 
-const root = createRoot(document.getElementById("app"));
-root.render(<App />);
+// Initialize the app
+setTimeout(() => {
+  const root = createRoot(document.getElementById("app"));
+  root.render(<App />);
+}, 100);
